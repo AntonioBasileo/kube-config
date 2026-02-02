@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tirocinio-smart-deployment
+spec:
+  selector:
+    matchLabels:
+      app: tirocinio-smart
+  template:
+    metadata:
+      labels:
+        app: tirocinio-smart
+    spec:
+      containers:
+        - name: tirocinio-smart
+          image: docker.io/antoniobasileo/tirocinio-smart-app:latest
+          ports:
+            - containerPort: 8000
+              protocol: TCP
+          env:
+            - name: DB_ENGINE
+              value: "django.db.backends.mysql"
+            - name: DB_HOST
+              value: "tirocinio-smart-db"
+            - name: DB_PORT
+              value: "3306"
+            - name: DB_NAME
+              value: "tirocinio-smart"
+            - name: DB_USER
+              value: "tirociniosmart_db_user"
+            - name: JWT_ALGORITHM
+              value: HS256
+            - name: JWT_EXPIRATION_TIME
+              value: "86400"
+            - name: JWT_ISSUER
+              value: "tirociniosmart"
+            - name: MAX_WAIT_SECONDS_ENTRYPOINT
+              value: "60"
+          envFrom:
+            - secretRef:
+                name: tirocinio-smart-secrets
+          resources:
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+            requests:
+              memory: "256Mi"
+              cpu: "250m"
