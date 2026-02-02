@@ -1,0 +1,22 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: tirocinio-smart-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+    nginx.ingress.kubernetes.io/use-regex: "true"
+    nginx.ingress.kubernetes.io/x-forwarded-prefix: "/tirocinio-smart"
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      more_set_headers "X-Original-URI: $request_uri";
+      more_set_headers "X-Rewrite-URI: $uri";
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /tirocinio-smart(/|$)(.*)
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: tirocinio-smart-service
+            port:
+              name: http
