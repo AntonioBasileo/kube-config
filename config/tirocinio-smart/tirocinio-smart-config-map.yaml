@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: tirocinio-smart-config
+data:
+  DB_ENGINE: "django.db.backends.mysql"
+  DB_HOST: "tirocinio-smart-db"
+  DB_PORT: "3306"
+  DB_NAME: "tirocinio-smart"
+  DB_USER: "tirociniosmart_db_user"
+  JWT_ALGORITHM: "HS256"
+  JWT_EXPIRATION_TIME: "86400"
+  JWT_ISSUER: "tirociniosmart"
+  MAX_WAIT_SECONDS_ENTRYPOINT: "60"
