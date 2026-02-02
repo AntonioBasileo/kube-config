@@ -3,6 +3,7 @@ kind: Deployment
 metadata:
   name: tirocinio-smart-deployment
 spec:
+  replicas: 1
   selector:
     matchLabels:
       app: tirocinio-smart
