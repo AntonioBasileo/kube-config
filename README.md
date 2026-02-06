@@ -2,44 +2,58 @@
 
 Repository dedicata alla **gestione centralizzata dei manifest Kubernetes** (YAML) per i vari progetti presenti su GitHub.
 
-L’obiettivo è avere una struttura chiara e riutilizzabile per definire **Deployment, Service, Ingress e Secret** dei diversi progetti, mantenendo configurazioni versionate e facilmente aggiornabili.
+L’obiettivo è avere una struttura chiara e riutilizzabile per definire **Deployment, Service, Ingress, Secret e altri manifest** per i diversi progetti, mantenendo configurazioni versionate e facilmente aggiornabili.
 
 ## Scopo
 
-- Creare e mantenere i file Kubernetes per più progetti GitHub in un unico posto
+- Centralizzare i manifest Kubernetes per più progetti
 - Standardizzare la struttura dei manifest tra progetti diversi
-- Facilitare deploy e aggiornamenti (immagini, variabili d’ambiente, risorse, ecc.)
-- Tenere traccia delle modifiche tramite Git (audit e rollback)
+- Facilitare deploy e rollback (immagini, variabili d’ambiente, risorse)
+- Fornire script di utilità per operazioni ripetitive (creazione namespace, secrets, apply)
+- Ogni progetto ha una propria cartella (es. `<nome-progetto>/`).
 
-## Struttura della repository
+## Uso rapido (comandi utili)
 
-La repo è organizzata per “tipo di risorsa” e poi per progetto:
+1) Eseguire gli scripts bash nella cartella `scripts/` per creare namespace, applicare manifest e creare/aggiornare secrets.
 
-- `deployment/`  
-  Contiene i manifest relativi a **Deployment** e (quando utile) anche i **Service** legati al deploy applicativo.
+3) Verifiche e debug:
 
-- `ingress/`  
-  Contiene i manifest di **Ingress** (routing HTTP/HTTPS, host, path, TLS, ecc.).
+```bash
+kubectl get pods -n eoq
+kubectl logs -f <pod-name> -n eoq
+kubectl describe pod <pod-name> -n eoq
+kubectl get svc -n eoq
+kubectl port-forward -n eoq svc/<service-name> 8000:<service-port>
+```
 
-- `secrets/`  
-  Contiene i manifest per i **Secret**. (es. credenziali di accesso a database, chiavi API, ecc.)
+## Namespace e risoluzione dei Service
 
-Ogni progetto ha una propria cartella (es. `deployment/<nome-progetto>/`) con i relativi YAML.
+- I `Service` sono namespaced. Se un Service si chiama `db-service` nel namespace `tirocinio-smart`, il suo FQDN è:
+  `db-service.tirocinio-smart.svc.cluster.local`
+- Se la tua applicazione è in un namespace diverso, nel `ConfigMap` o nelle variabili d'ambiente usa il FQDN completo oppure sposta l'app nello stesso namespace.
 
-## Convenzioni consigliate
+Esempio di host da usare in `ConfigMap`:
 
-Per mantenere ordine e coerenza:
+```
+DB_HOST: db-service.tirocinio-smart.svc.cluster.local
+DB_PORT: "3306"
+```
 
-- Nomi file chiari e prevedibili, ad esempio:
-    - `<progetto>-deployment.yaml`
-    - `<progetto>-service.yaml`
-    - `<progetto>-ingress.yaml`
-    - `<progetto>-secret.yaml`
+## Kafka e Zookeeper
 
-- Separare per ambiente se serve (consigliato quando la repo cresce), ad esempio:
-    - `deployment/<progetto>/dev/`
-    - `deployment/<progetto>/prod/`
+- Per connettere client a Kafka nel cluster, crea un `Service` per Kafka (ClusterIP) e usa `kafka-service:9092` (se client è nello stesso namespace) oppure `kafka-service.<namespace>.svc.cluster.local:9092`.
+- Se vuoi che Kafka aspetti Zookeeper al boot, usa un `initContainer` nel pod Kafka che fa polling della porta 2181 di Zookeeper (ovviamente si presuppone che stiate provando tutto in locale).
 
-## Come usare i manifest
+## Note su `ExternalName` e integrazione con host
 
-Applica i manifest con `kubectl` puntando al file o alla cartella del progetto.
+- `type: ExternalName` crea solo un record DNS (CNAME) che punta a un hostname esterno (es. `host.docker.internal`). Non crea Endpoints e non instrada traffico direttamente. Verifica che il nome risolva e che il servizio esterno sia raggiungibile dal cluster.
+- Per esporre un DB esterno al cluster in modo affidabile puoi usare un `Service` + `Endpoints` che puntano all'IP esterno.
+
+## Best practice rapide
+
+- Non commitare segreti in chiaro nel repo. Usa `kubectl create secret --from-file` o `stringData`/`--from-literal` localmente.
+- Definisci `readinessProbe` e `livenessProbe` per i Pod critici.
+- Per dipendenze tra servizi (es. Kafka -> Zookeeper) usa `initContainers` o readiness probe anziché aspettarti un ordine d'avvio da Kubernetes.
+- Usa `kubectl apply -f <directory>` per applicare più manifest in modo dichiarativo.
+
+Sviluppato da Antonio Basileo.
