@@ -1,0 +1,23 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: eoq-ingress
+  namespace: eoq
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+    nginx.ingress.kubernetes.io/use-regex: "true"
+    nginx.ingress.kubernetes.io/x-forwarded-prefix: "/eoq"
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      more_set_headers "X-Original-URI: $request_uri";
+      more_set_headers "X-Rewrite-URI: $uri";
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /eoq(/|$)(.*)
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: eoq-service
+            port:
+              name: http

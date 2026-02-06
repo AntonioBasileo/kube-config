@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: zookeeper-config
+  namespace: zookeper
+data:
+  ZOOKEEPER_CLIENT_PORT: "2181"

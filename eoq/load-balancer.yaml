@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: eoq-service
+  namespace: eoq
+spec:
+  type: LoadBalancer
+  selector:
+    app: eoq
+  ports:
+    - protocol: TCP
+      port: 8001
+      targetPort: 8000
+      name: http

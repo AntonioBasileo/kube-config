@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kafka-deployment
+  namespace: zookeeper
+  labels:
+    app: kafka
+spec:
+  selector:
+    matchLabels:
+      app: kafka
+  template:
+    metadata:
+      labels:
+        app: kafka
+    spec:
+      initContainers:
+        - name: wait-for-zookeeper
+          image: busybox:1.36
+          command:
+            - sh
+            - -c
+            - |
+              echo "Aspettando Zookeeper..."
+              until nc -z zookeeper-service.zookeeper.svc.cluster.local 2181;
+              do
+                echo "ZooKeeper non ancora pronto, riprovo..."
+                sleep 2
+              done
+              echo "ZooKeeper è on line!"
+      containers:
+      - name: kafka
+        image: confluentinc/cp-kafka:7.5.0
+        ports:
+          - containerPort: 9092
+            protocol: TCP
+        envFrom:
+          - configMapRef:
+              name: kafka-config
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "500m"
+          limits:
+            memory: "1Gi"
+            cpu: "1"
