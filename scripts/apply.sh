@@ -3,7 +3,6 @@ set -e
 
 NAMESPACE="${1:-}"
 GENERAL_NAMESPACE="${2:-}"
-SERVICE_PORT="${3:-}"
 
 echo "--- 🚀 Configurazione Kubernetes ---"
 if ! kubectl get namespace "$GENERAL_NAMESPACE" >/dev/null 2>&1; then
@@ -27,10 +26,9 @@ kubectl apply -f ./"$NAMESPACE" -n "$NAMESPACE"
 
 # Creazione/aggiornamento del Secret per le variabili d'ambiente sensibili
 kubectl create secret generic "$NAMESPACE"-secrets \
-  --from-literal=DB_PASSWORD=antonio92. \
-  --from-literal=JWT_SECRET_KEY=antonio92. \
+  --from-literal=DB_PASSWORD=tuapassword \
+  --from-literal=JWT_SECRET_KEY=tuasecret \
   -n "$NAMESPACE" --dry-run=client -o yaml | kubectl apply -f -
 
 echo "--- ✅ Configurazione Kubernetes completata ---"
-echo "Adesso puoi accedere all'applicazione all'indirizzo http://localhost:${SERVICE_PORT}/${NAMESPACE}/"
 
