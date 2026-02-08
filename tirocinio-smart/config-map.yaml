@@ -5,12 +5,13 @@ metadata:
   namespace: tirocinio-smart
 data:
   DB_ENGINE: "django.db.backends.mysql"
-  DB_HOST: "db-service.mysql.svc.cluster.local"
+  DB_HOST: "db-service.general.svc.cluster.local"
   DB_PORT: "3306"
   DB_NAME: "tirocinio-smart"
   DB_USER: "tirociniosmart_db_user"
   JWT_ALGORITHM: "HS256"
   JWT_EXPIRATION_TIME: "86400"
-  JWT_ISSUER: "tirociniosmart"
+  JWT_ISSUER: "tirocinio-smart"
   MAX_WAIT_SECONDS_ENTRYPOINT: "60"
   SERVICE_PORT: "8000"
+  NAMESPACE: "tirocinio-smart"

@@ -4,6 +4,8 @@ Repository dedicata alla **gestione centralizzata dei manifest Kubernetes** (YAM
 
 L’obiettivo è avere una struttura chiara e riutilizzabile per definire **Deployment, Service, Ingress, Secret e altri manifest** per i diversi progetti, mantenendo configurazioni versionate e facilmente aggiornabili.
 
+Tutte le configurazioni sono state fatte per essere utilizzate in locale, ovviamente sono personalizzabili per ogni progetto.
+
 ## Scopo
 
 - Centralizzare i manifest Kubernetes per più progetti
@@ -14,7 +16,8 @@ L’obiettivo è avere una struttura chiara e riutilizzabile per definire **Depl
 
 ## Uso rapido (comandi utili)
 
-1) Eseguire gli scripts bash nella cartella `scripts/` per creare namespace, applicare manifest e creare/aggiornare secrets.
+1) Eseguire lo script bash `apply.sh` nella cartella `scripts/` per creare namespace, applicare manifest e creare/aggiornare secrets (per come è configurato lo script dovete spostarvi nella root del progetto ed eseguire il comando `./scripts/apply.sh`).
+2) Se volete cancellare tutte le configurazioni kubernetes, sempre dalla root del progetto eseguire lo script bash `./scripts/clean.sh` e passare come primo argomento il namespace dell'applicazione e come secondo parametro il namespace del servizio mysql.
 
 3) Verifiche e debug:
 
@@ -42,7 +45,7 @@ DB_PORT: "3306"
 ## Kafka e Zookeeper
 
 - Per connettere client a Kafka nel cluster, crea un `Service` per Kafka (ClusterIP) e usa `kafka-service:9092` (se client è nello stesso namespace) oppure `kafka-service.<namespace>.svc.cluster.local:9092`.
-- Se vuoi che Kafka aspetti Zookeeper al boot, usa un `initContainer` nel pod Kafka che fa polling della porta 2181 di Zookeeper (ovviamente si presuppone che stiate provando tutto in locale).
+- Se vuoi che Kafka aspetti Zookeeper al boot, usa un `initContainer` nel pod Kafka che fa polling della porta 2181 di Zookeeper.
 
 ## Note su `ExternalName` e integrazione con host
 
@@ -57,3 +60,4 @@ DB_PORT: "3306"
 - Usa `kubectl apply -f <directory>` per applicare più manifest in modo dichiarativo.
 
 Sviluppato da Antonio Basileo.
+pppppppp0'9po9p'p0p9'op9'op0oo

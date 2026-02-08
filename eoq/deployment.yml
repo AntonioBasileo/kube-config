@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
       - name: eoq
-        image: docker.io/antoniobasileo/eoq:latest
+        image: docker.io/antoniobasileo/eoq-app:latest
         ports:
           - containerPort: 8000
             protocol: TCP
