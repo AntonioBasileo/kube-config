@@ -14,7 +14,7 @@ data:
   JWT_ISSUER: "eoq"
   MAX_WAIT_SECONDS_ENTRYPOINT: "60"
   KAFKA_BOOTSTRAP_SERVERS: "kafka-service.zookeeper.svc.cluster.local:9092"
-  KAFKA_TOPIC: "eoq"
+  KAFKA_TOPIC: "topic-orders"
   KAFKA_GROUP_ID: "eoq"
   KAFKA_AUTO_OFFSET_RESET: "earliest"
   KAFKA_ENABLE_AUTO_COMMIT: "true"
