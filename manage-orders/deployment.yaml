@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: manage-orders-deployment
+  namespace: manage-orders
+  labels:
+    app: manage-orders
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: manage-orders
+  template:
+    metadata:
+      labels:
+        app: manage-orders
+    spec:
+      containers:
+      - name: manage-orders
+        image: docker.io/antoniobasileo/manage-orders-app:latest
+        ports:
+          - containerPort: 8080
+            protocol: TCP
+        volumeMounts:
+          - name: manage-orders-config
+            mountPath: config/
+        env:
+          - name: SPRING_PROFILES_ACTIVE
+            value: "remote"
+          - name: SPRING_CONFIG_LOCATION
+            value: "file:/config/"
+        envFrom:
+          - secretRef:
+              name: manage-orders-secrets
+        resources:
+          limits:
+            memory: "512Mi"
+            cpu: "1000m"
+          requests:
+            memory: "256Mi"
+            cpu: "500m"
+      volumes:
+        - name: manage-orders-config
+          configMap:
+            name: manage-orders-config

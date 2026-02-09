@@ -1,0 +1,23 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: manage-orders-ingress
+  namespace: manage-orders
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+    nginx.ingress.kubernetes.io/use-regex: "true"
+    nginx.ingress.kubernetes.io/x-forwarded-prefix: "/manage-orders"
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      more_set_headers "X-Original-URI: $request_uri";
+      more_set_headers "X-Rewrite-URI: $uri";
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /manage-orders(/|$)(.*)
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: manage-orders-service
+            port:
+              name: http

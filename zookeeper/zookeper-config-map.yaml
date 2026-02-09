@@ -5,4 +5,3 @@ metadata:
   namespace: zookeeper
 data:
   ZOOKEEPER_CLIENT_PORT: "2181"
-  NAMESPACE: "zookeeper"
