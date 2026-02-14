@@ -26,8 +26,8 @@ kubectl apply -f ./"$NAMESPACE" -n "$NAMESPACE"
 
 # Creazione/aggiornamento del Secret per le variabili d'ambiente sensibili
 kubectl create secret generic "$NAMESPACE"-secrets \
-  --from-literal=DB_PASSWORD=antonio92. \
-  --from-literal=JWT_SECRET_KEY=zceynBopj3LihXxYiKmq3Bm1Ka1ML6rEoaKfotcDQyg= \
+  --from-literal=DB_PASSWORD=tuadbpassword \
+  --from-literal=JWT_SECRET_KEY=tuajwtsecret \
   -n "$NAMESPACE" --dry-run=client -o yaml | kubectl apply -f -
 
 echo "--- ✅ Configurazione Kubernetes completata ---"
