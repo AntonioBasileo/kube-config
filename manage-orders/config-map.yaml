@@ -10,13 +10,42 @@ data:
         
     jwt:
       secret: ${JWT_SECRET_KEY}
-  
+    
     spring:
+      kafka:
+        bootstrap-servers: "localhost:9092"
+        topics: "topic-orders"
+        consumer:
+          groupId: manage-orders
+          reconnect-backoff-ms: 5000
+          reconnect-backoff-max-ms: 30000
+          socket-connection-setup-timeout-ms: 10000
+          socket-connection-setup-timeout-max-ms: 30000
+          max-poll-records: 100
+          concurrency: 3
+        producer:
+          properties:
+            '[acks]': all
+            '[retries]': 5
+            '[delivery.timeout.ms]': 120000
+            '[auto.register.schemas]': false
+            '[use.latest.version]': true
+        retry:
+          max-attempts: 5
+          initial-interval-ms: 5000
+          multiplier: 2.0
+          max-interval-ms: 60000
+        dlt:
+          reprocessing:
+            interval-ms: 600000
+            initial-delay-ms: 300000
+            max-per-run: 100
+            max-attempts: 5
       datasource:
-        username: manage_orders_user
-        password: ${DB_PASSWORD}
+        username: root
+        password: root
         driver-class-name: com.mysql.cj.jdbc.Driver
-        url: jdbc:mysql://db-service.general.svc.cluster.local:3306/manage-orders?allowPublicKeyRetrieval=true&useSSL=false
+        url: jdbc:mysql://localhost:3306/manage-orders
       jpa:
         properties:
           hibernate:
@@ -25,21 +54,21 @@ data:
         hibernate:
           ddl-auto: update
         database-platform: org.hibernate.dialect.MySQLDialect
-      kafka:
-        bootstrap-servers: kafka-service.zookeeper.svc.cluster.local:9092
-        consumer:
-          topic: topic-orders
-          group-id: manage-orders
       liquibase:
         enabled: true
         changelog: config/liquibase/master.xml
         schema: manage-orders
-  
+      main:
+        banner-mode: OFF
+      application:
+        name: "@project.artifactId@"
+    
     logging:
+      format: simple
       level:
         root: INFO
-  
+    
     server:
-      port: 8080
+      port: 8081
       servlet:
         context-path: /manage-orders
