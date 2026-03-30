@@ -13,8 +13,8 @@ data:
     
     spring:
       kafka:
-        bootstrap-servers: "localhost:9092"
-        topics: "topic-orders"
+        bootstrap-servers: kafka-service.zookeeper.svc.cluster.local:9092
+        topics: topic-orders
         consumer:
           groupId: manage-orders
           reconnect-backoff-ms: 5000
