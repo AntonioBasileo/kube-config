@@ -61,7 +61,7 @@ data:
       main:
         banner-mode: OFF
       application:
-        name: "@project.artifactId@"
+        name: manage-orders
     
     logging:
       format: simple
